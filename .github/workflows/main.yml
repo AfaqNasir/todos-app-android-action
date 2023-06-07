@@ -19,3 +19,4 @@ jobs:
         with:
           name: release
           path: android/app/build/outputs/apk/release/app-release.apk
+ 
