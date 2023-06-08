@@ -16,14 +16,17 @@ jobs:
       - name: Install dependencies
         run: yarn install
 
-      - name: Accept Android licenses
-        run: yes | sdkmanager --licenses
-
       - name: Set up Android SDK
-        uses: reactivecircus/android-setup@v2
-        with:
-          sdk-platform: android-30
-          ndk-version: 21.3.6528147
+        run: |
+          sudo apt-get update -y
+          sudo apt-get install -y openjdk-8-jdk-headless
+          wget -q https://dl.google.com/android/repository/sdk-tools-linux-4333796.zip -O android-sdk.zip
+          unzip -q android-sdk.zip -d android-sdk
+          export ANDROID_SDK_ROOT=$PWD/android-sdk
+          export PATH=$PATH:$PWD/android-sdk/tools/bin:$PWD/android-sdk/platform-tools
+
+          yes | sdkmanager --licenses
+          sdkmanager "platform-tools" "platforms;android-30" "build-tools;30.0.3"
 
       - name: Build Android Release
         run: cd android && ./gradlew assembleRelease
