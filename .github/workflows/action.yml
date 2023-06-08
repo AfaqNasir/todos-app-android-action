@@ -2,7 +2,7 @@ name: "Build Android app"
 
 on:
   push:
-    branches: [ "main" ]
+    branches: [ "dev" ]
     # can add push and pull_request here 
 
 jobs:
