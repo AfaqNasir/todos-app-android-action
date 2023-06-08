@@ -13,6 +13,9 @@ jobs:
 
       - name: Build Android Release
         run: cd android && ./gradlew assembleRelease --stacktrace
+        
+      - name: React Native Build
+        uses: bamachoub/react-native-build-action@v1.0.0
 
       - name: Upload Artifact
         uses: actions/upload-artifact@v1
