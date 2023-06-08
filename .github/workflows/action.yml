@@ -1,0 +1,12 @@
+name: 'React Native Build Action'
+description: 'Builds a React Native project for Android'
+inputs:
+  project_path:
+    description: 'The relative path to the React Native project'
+    required: true
+outputs:
+  apk_path:
+    description: 'The path to the generated APK'
+runs:
+  using: 'docker'
+  image: 'docker://your-docker-image-name'
