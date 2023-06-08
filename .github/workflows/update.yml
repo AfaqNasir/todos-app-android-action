@@ -2,7 +2,7 @@ name: React Native build android
 
 on:
   push:
-    branches: [ "main" ]
+    branches: [ "dev" ]
 
 jobs:
   build-android:
