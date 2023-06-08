@@ -1,0 +1,32 @@
+name: Build Android
+on:
+  push:
+    branches: [main]
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: 14
+
+      - name: Install dependencies
+        run: yarn install
+
+      - name: Set up Android
+        uses: react-native-community/cli@v1.13.0
+        with:
+          command: 'android-sdk'
+          args: 'licenses'
+
+      - name: Build Android Release
+        run: npx react-native run-android --variant=release
+
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: release
+          path: android/app/build/outputs/apk/release/app-release.apk
