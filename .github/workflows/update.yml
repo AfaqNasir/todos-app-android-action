@@ -1,38 +1,48 @@
-name: Build Android
+name: React Native build android
+
 on:
   push:
-    branches: [main]
+    branches: [ "main" ]
+
 jobs:
-  build:
+  build-android:
     runs-on: ubuntu-latest
+    env:
+      NODE_ENV: production
     steps:
-      - uses: actions/checkout@v3
+      - name: install Linux dependencies
+        run: sudo apt-get update || true
 
-      - name: Set up Node.js
-        uses: actions/setup-node@v2
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Setup node
+        uses: actions/setup-node@v3
         with:
-          node-version: 14
+          node-version: '18'
 
-      - name: Install dependencies
-        run: yarn install
+      - name: Install npm dependencies
+        run: npm install
 
-      - name: Set up Android SDK
-        run: |
-          sudo apt-get update -y
-          sudo apt-get install -y openjdk-8-jdk-headless
-          wget -q https://dl.google.com/android/repository/sdk-tools-linux-4333796.zip -O android-sdk.zip
-          unzip -q android-sdk.zip -d android-sdk
-          export ANDROID_SDK_ROOT=$PWD/android-sdk
-          export PATH=$PATH:$PWD/android-sdk/tools/bin:$PWD/android-sdk/platform-tools
+      - name: Install java
+        uses: actions/setup-java@v3
+        with:
+          java-version: "18"
+          distribution: "zulu"
 
-          yes | sdkmanager --licenses
-          sdkmanager "platform-tools" "platforms;android-30" "build-tools;30.0.3"
+      - name: make gradlew executable
+        run: chmod +x ./android/gradlew
 
-      - name: Build Android Release
-        run: cd android && ./gradlew assembleRelease
+      - name: Bundle RN Android assets
+        run: npx react-native bundle --platform android --dev false --entry-file index.js --bundle-output android/app/src/main/assets/index.android.bundle --assets-dest android/app/src/main/res
+      - name: Clean up after bundling
+        run: rm -rf ./android/app/src/main/res/drawable-* && rm -rf ./android/app/src/main/res/raw
+
+      - name: Build android APK
+        run: cd ./android && ./gradlew clean app:assembleRelease -x bundleReleaseJsAndAssets
 
       - name: Upload Artifact
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v1
         with:
-          name: release
-          path: android/app/build/outputs/apk/release/app-release.apk
+          name: app-release.apk
+          path: android/app/build/outputs/apk/release/
